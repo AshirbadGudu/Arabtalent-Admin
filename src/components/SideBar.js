@@ -20,7 +20,7 @@ const SideBar = (props) => {
               paddingVertical: 15,
               paddingLeft: 10,
             }}>
-            <Avatar.Image source={require('../assets/logo.png')} size={50} />
+            <Avatar.Image source={require('../assets/icon.png')} size={50} />
             <View style={{marginLeft: 15}}>
               <Title>Admin Panel</Title>
               <Caption>arabtalent@admin.com</Caption>

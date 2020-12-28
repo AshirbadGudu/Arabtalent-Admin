@@ -14,7 +14,7 @@ const About = (props) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{width: '100%', alignItems: 'center', padding: 10}}>
           <Image
-            source={require('../assets/logo.png')}
+            source={require('../assets/icon.png')}
             style={{resizeMode: 'center', width: 100, height: 100}}
           />
           <Title>{ABOUT_APP.APP_NAME}</Title>

@@ -32,7 +32,7 @@ const Settings = (props) => {
       <ScrollView>
         <View style={styles.userInfoSection}>
           <View style={{flexDirection: 'row', marginTop: 15}}>
-            <Avatar.Image source={require('../assets/logo.png')} size={60} />
+            <Avatar.Image source={require('../assets/icon.png')} size={60} />
             <View style={{marginLeft: 15}}>
               <Title>{'Arabtalent Admin Panel'}</Title>
             </View>
