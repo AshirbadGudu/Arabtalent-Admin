@@ -1,20 +1,33 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, FlatList, View, Image} from 'react-native';
+import {StyleSheet, FlatList, View} from 'react-native';
 import {List, Button} from 'react-native-paper';
 import SearchInput, {createFilter} from 'react-native-search-filter';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Topbar from '../components/Topbar';
+import database from '@react-native-firebase/database';
+
 const Jobs = (props) => {
-  const [posts, setPosts] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [searchTex, setSearchTex] = useState('');
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/albums/1/photos')
-      .then((value) => {
-        value.json().then((data) => setPosts(data));
-      })
-      .catch((e) => console.log(e));
+    const fetchJobs = async () => {
+      database()
+        .ref(`Jobs`)
+        .on('value', (snapshot) => {
+          if (snapshot.exists()) {
+            const obj = snapshot.val();
+            const jobsArr = [];
+            for (const key in obj) {
+              jobsArr.push({key, ...obj[key]});
+            }
+            setJobs(jobsArr);
+          }
+        });
+    };
+    fetchJobs();
   }, []);
-  const filteredPosts = posts.filter(createFilter(searchTex, ['title']));
+
+  const filteredJobs = jobs.filter(createFilter(searchTex, ['job_title']));
 
   return (
     <>
@@ -40,21 +53,15 @@ const Jobs = (props) => {
       <List.Section style={{marginBottom: 100}}>
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={filteredPosts}
+          data={filteredJobs}
           renderItem={({item, index}) => (
             <List.Item
               key={index}
-              left={(props) => (
-                <Image
-                  source={{uri: item.thumbnailUrl}}
-                  style={{resizeMode: 'center', width: 50, height: 50}}
-                />
-              )}
-              title={item.title}
+              title={item.job_title}
               right={(props) => <Button onPress={() => {}}>View</Button>}
             />
           )}
-          keyExtractor={(item) => `${item.id}`}
+          keyExtractor={(item) => `${item.key}`}
         />
       </List.Section>
     </>

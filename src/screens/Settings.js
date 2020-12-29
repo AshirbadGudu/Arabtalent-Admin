@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, ScrollView, View, NativeModules, Share} from 'react-native';
+import database from '@react-native-firebase/database';
 
 import {
   Avatar,
@@ -13,8 +14,10 @@ import Topbar from '../components/Topbar';
 import {useAppContext} from '../config/AppContext';
 
 const Settings = (props) => {
-  const {logout, handelExit, handelShare} = useAppContext();
-
+  const {logout, handelExit, user} = useAppContext();
+  const [jobSeekers, setJobSeekers] = useState([]);
+  const [employers, setEmployers] = useState([]);
+  useState;
   async function handleLogout() {
     try {
       logout();
@@ -23,6 +26,29 @@ const Settings = (props) => {
       alert('Failed to log out');
     }
   }
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      database()
+        .ref(`Users`)
+        .on('value', (snapshot) => {
+          if (snapshot.exists()) {
+            const obj = snapshot.val();
+            const jobSeekersArr = [];
+            const employersArr = [];
+            for (const key in obj) {
+              obj[key].user === 'JobSeeker'
+                ? jobSeekersArr.push({key, ...obj[key]})
+                : employersArr.push({key, ...obj[key]});
+            }
+            setJobSeekers(jobSeekersArr);
+            setEmployers(employersArr);
+          }
+        });
+    };
+    fetchUsers();
+  }, []);
+
   return (
     <>
       <Topbar
@@ -41,9 +67,7 @@ const Settings = (props) => {
         <View style={styles.userInfoSection}>
           <View style={styles.row}>
             <Ionicons name="mail" size={20} color="#777" />
-            <Text style={{marginLeft: 20, color: '#777'}}>
-              {'ashirbadapanigrahi@gmail.com'}
-            </Text>
+            <Text style={{marginLeft: 20, color: '#777'}}>{user.email}</Text>
           </View>
         </View>
         <View style={styles.wrapper}>
@@ -52,11 +76,11 @@ const Settings = (props) => {
               styles.infoBox,
               {borderRightColor: '#777', borderRightWidth: 1},
             ]}>
-            <Title>0</Title>
+            <Title>{employers.length}</Title>
             <Caption>Employers</Caption>
           </View>
           <View style={styles.infoBox}>
-            <Title>0</Title>
+            <Title>{jobSeekers.length}</Title>
             <Caption>Job Seekers</Caption>
           </View>
         </View>

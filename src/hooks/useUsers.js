@@ -1,13 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import {FlatList} from 'react-native';
-import {List, Button} from 'react-native-paper';
+import React from 'react';
 import database from '@react-native-firebase/database';
 
-const Employers = () => {
+const useUsers = () => {
   const [jobSeekers, setJobSeekers] = React.useState([]);
   const [employers, setEmployers] = React.useState([]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchUsers = async () => {
       database()
         .ref(`Users`)
@@ -28,24 +26,7 @@ const Employers = () => {
     };
     fetchUsers();
   }, []);
-  return (
-    <>
-      <List.Section>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={employers}
-          renderItem={({item, index}) => (
-            <List.Item
-              key={index}
-              title={item.employer_name}
-              right={(props) => <Button onPress={() => {}}>View</Button>}
-            />
-          )}
-          keyExtractor={(item) => `${item.key}`}
-        />
-      </List.Section>
-    </>
-  );
+  return [jobSeekers, employers];
 };
 
-export default Employers;
+export default useUsers;

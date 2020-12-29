@@ -6,7 +6,7 @@ import {Avatar, Title, Caption, Drawer} from 'react-native-paper';
 import {useAppContext} from '../config/AppContext';
 
 const SideBar = (props) => {
-  const {handelExit, handelShare, logout} = useAppContext();
+  const {handelExit, user, logout} = useAppContext();
   return (
     <>
       <View
@@ -23,7 +23,7 @@ const SideBar = (props) => {
             <Avatar.Image source={require('../assets/icon.png')} size={50} />
             <View style={{marginLeft: 15}}>
               <Title>Admin Panel</Title>
-              <Caption>arabtalent@admin.com</Caption>
+              <Caption>{user.email}</Caption>
             </View>
           </View>
           <Drawer.Section>

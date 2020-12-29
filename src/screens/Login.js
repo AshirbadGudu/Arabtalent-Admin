@@ -1,15 +1,30 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Image, KeyboardAvoidingView, Text} from 'react-native';
 import {Button, Card, TextInput, Title} from 'react-native-paper';
 import {useAppContext} from '../config/AppContext';
 import {COLORS} from '../config/Colors';
 import {AuthStyle} from '../config/Style';
+import Spinner from 'react-native-loading-spinner-overlay';
+
 const Login = (props) => {
   const {login} = useAppContext();
-
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loader, setLoader] = useState({isOpen: false, msg: ''});
+  const handelLogin = async () => {
+    try {
+      setLoader({isOpen: true, msg: 'Authenticating...'});
+      await login(email, password);
+      alert('Successfully logged in');
+    } catch (error) {
+      setLoader({isOpen: false, msg: ''});
+      alert(error.message);
+    }
+  };
   return (
     <>
       <KeyboardAvoidingView style={AuthStyle.container}>
+        <Spinner visible={loader.isOpen} textContent={loader.msg} />
         <Card style={{padding: 20}}>
           <Image
             source={require('../assets/logo.png')}
@@ -23,6 +38,8 @@ const Login = (props) => {
               mode="outlined"
               label="Enter Email ID"
               autoCapitalize="none"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
             />
             <TextInput
               style={{marginBottom: 10}}
@@ -30,6 +47,8 @@ const Login = (props) => {
               mode="outlined"
               label="Enter Your Password"
               autoCapitalize="none"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
             />
             <View style={AuthStyle.Right}>
               <Button
@@ -38,7 +57,7 @@ const Login = (props) => {
               </Button>
             </View>
             <Button
-              onPress={() => login()}
+              onPress={handelLogin}
               color={COLORS.PRIMARY}
               style={{marginVertical: 5}}
               mode="contained">

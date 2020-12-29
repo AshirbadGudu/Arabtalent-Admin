@@ -1,27 +1,17 @@
-import React, { useContext, useEffect, useReducer, useState } from 'react';
-import { Alert, BackHandler, Linking, Platform, Share } from 'react-native';
+import React, {useContext, useEffect, useReducer, useState} from 'react';
+import {Alert, BackHandler, Linking, Platform, Share} from 'react-native';
+import auth from '@react-native-firebase/auth';
 
 // Create Context For Application
 const AppContext = React.createContext();
 
 // Create Custom Hook For Using The Context Data
 export const useAppContext = () => useContext(AppContext);
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'setNewUser':
-      return (state = action.payload);
 
-    case 'setOldUser':
-      return (state = action.payload);
-    case 'logout':
-      return (state = null);
-    default:
-      return state;
-  }
-};
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
   const [loading, setLoading] = useState(false);
-  const [user, setUserDetails] = useReducer(reducer, null);
+  const [user, setUserDetails] = useState(null);
+
   const handelShare = async () => {
     try {
       const result = await Share.share({
@@ -40,12 +30,12 @@ export const AuthProvider = ({ children }) => {
       [
         {
           text: 'Cancel',
-          onPress: () => { },
+          onPress: () => {},
           style: 'cancel',
         },
-        { text: 'OK', onPress: () => BackHandler.exitApp() },
+        {text: 'OK', onPress: () => BackHandler.exitApp()},
       ],
-      { cancelable: true },
+      {cancelable: true},
     );
   };
   const handelCall = () => {
@@ -59,23 +49,49 @@ export const AuthProvider = ({ children }) => {
     Linking.openURL(phoneNumber);
   };
 
-  const login = () => {
-    setUserDetails({ type: 'setNewUser', payload: { uid: 'uid' } });
+  const login = (email, password) => {
+    return auth().signInWithEmailAndPassword(email, password);
   };
-  const register = () => {
-    setUserDetails({ type: 'setOldUser', payload: { uid: 'uid' } });
-  };
-  const logout = () => {
-    setUserDetails({ type: 'logout' });
-  };
-  const forgetPassword = () => {
 
+  const logout = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are You Sure?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'Log Out',
+          onPress: () => {
+            setUserDetails(null);
+            auth().signOut();
+          },
+        },
+      ],
+      {cancelable: true},
+    );
+  };
+
+  const forgetPassword = (email) => {
+    return auth().sendPasswordResetEmail(email);
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(true);
-    }, 4000);
+    auth().onAuthStateChanged((user) => {
+      if (user) {
+        setUserDetails({email: user.email, uid: user.uid});
+        setTimeout(() => {
+          setLoading(true);
+        }, 4000);
+      } else {
+        setTimeout(() => {
+          setLoading(true);
+        }, 4000);
+      }
+    });
   }, []);
 
   // Context Data That Need In Application
@@ -83,12 +99,11 @@ export const AuthProvider = ({ children }) => {
     loading,
     user,
     handelCall,
-    login,
     handelExit,
     handelShare,
+    login,
     logout,
     forgetPassword,
-    register
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

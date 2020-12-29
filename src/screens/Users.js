@@ -1,7 +1,5 @@
 import React from 'react';
 import Topbar from '../components/Topbar';
-import Empty from '../components/Empty';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import Employers from './Employers';
 import JobSeekers from './JobSeekers';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
